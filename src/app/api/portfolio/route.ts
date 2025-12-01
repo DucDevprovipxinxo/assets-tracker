@@ -1,17 +1,25 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-export async function GET(req) {
-  const address = req.nextUrl.searchParams.get('address');
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const address = searchParams.get("address");
+  const MORALIS_API_KEY = process.env.MORALIS_API_KEY;
 
-  const tokens = [
-    { chain: 'eth', symbol: 'ETH', balance: '1.23' },
-    { chain: 'bsc', symbol: 'BNB', balance: '5.00' }
-  ];
+  const res = await fetch(
+    `https://deep-index.moralis.io/api/v2.2/${address}/nft?chain=eth&format=decimal&limit=25`,
+    {
+      headers: {
+        "X-API-Key": MORALIS_API_KEY!,
+      },
+    }
+  );
 
-  const nfts = [
-    { chain: 'eth', name: 'Demo NFT', image: 'https://via.placeholder.com/200' },
-    { chain: 'polygon', name: 'Sample NFT', image: 'https://via.placeholder.com/200' }
-  ];
-
-  return NextResponse.json({ tokens, nfts });
+  if (!res.ok) {
+    return NextResponse.json(
+      { error: "Failed to fetch from Moralis" },
+      { status: res.status }
+    );
+  }
+  const data = await res.json();
+  return NextResponse.json(data);
 }
