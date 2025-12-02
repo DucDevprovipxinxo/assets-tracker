@@ -8,6 +8,10 @@ export default function Home() {
   const [address, setAddress] = useState('');
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
+  const [filters, setFilters] = useState({
+    page: 1,
+    limit: 10
+  })
 
   async function fetchNFTs() {
     if (!address) {
@@ -16,7 +20,7 @@ export default function Home() {
     }
     try {
       setLoading(true);
-      const res = await fetch(`/api/portfolio?address=${address}`);
+      const res = await fetch(`/api/portfolio?address=${address}&page=${filters.page}&limit=${filters.limit}`);
       if (!res.ok) {
         alert("Không lấy được dữ liệu từ API!");
         return;
@@ -33,7 +37,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if(!data) return;
+    if (!data) return;
     console.log("Fetched data: ", data);
   }, [data])
 
