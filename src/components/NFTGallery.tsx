@@ -1,7 +1,6 @@
 import { convertIpfs } from "@/app/util/convert";
 
 export default function NFTGallery({ nfts }) {
-  console.log("nfts: ", nfts)
   const nftData = nfts.result
 
   return (

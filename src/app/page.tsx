@@ -1,8 +1,9 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import NFTGallery from '@/components/NFTGallery';
 import TokenList from '@/components/TokenList';
 import WalletSummary from '@/components/WalletSummary';
+import { ChainSelector } from '@/components/ChainSelector';
 
 export default function Home() {
   const [address, setAddress] = useState('');
@@ -10,17 +11,17 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
     page: 1,
-    limit: 10
+    limit: 10,
+    chain: 'eth',
   })
 
   async function fetchNFTs() {
     if (!address) {
-      alert("Vui lòng nhập địa chỉ ví!");
       return;
     }
     try {
       setLoading(true);
-      const res = await fetch(`/api/portfolio?address=${address}&page=${filters.page}&limit=${filters.limit}`);
+      const res = await fetch(`/api/portfolio?address=${address}&chain=${filters.chain}&page=${filters.page}&limit=${filters.limit}`);
       if (!res.ok) {
         alert("Không lấy được dữ liệu từ API!");
         return;
@@ -37,30 +38,45 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if (!data) return;
-    console.log("Fetched data: ", data);
-  }, [data])
+    if (address && data) {
+      fetchNFTs();
+    }
+  }, [filters.chain]);
 
   return (
     <main className="bg-[#181C24] min-h-screen p-6">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 text-center">Crypto Portfolio Tracker</h1>
 
-        <div className="flex gap-2 mb-8 justify-center">
-          <input
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder="Enter wallet address"
-            className="px-3 py-2 rounded bg-gray-800 border border-gray-700 w-96"
-            onKeyDown={(e) => e.key === 'Enter' && fetchNFTs()}
-          />
-          <button
-            onClick={fetchNFTs}
-            disabled={loading}
-            className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50"
-          >
-            {loading ? 'Loading...' : 'View'}
-          </button>
+        <div className="flex flex-col gap-4 mb-8 items-center">
+          {/* Address input */}
+          <div className="flex gap-2">
+            <input
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Enter wallet address"
+              className="px-3 py-2 rounded bg-gray-800 border border-gray-700 w-96"
+              onKeyDown={(e) => e.key === 'Enter' && fetchNFTs()}
+            />
+            <button
+              onClick={fetchNFTs}
+              disabled={loading}
+              className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50"
+            >
+              {loading ? 'Loading...' : 'View'}
+            </button>
+          </div>
+
+          {/* Chain selector */}
+          {
+            address && (
+              <ChainSelector
+                filters={filters}
+                setFilters={setFilters}
+              />
+            )
+          }
+
         </div>
 
         {data ? (
