@@ -1,0 +1,54 @@
+interface ListPrice {
+  listed: boolean;
+  price: string | null;
+  price_currency: string | null;
+  price_usd: string | null;
+  marketplace: string | null;
+}
+
+interface NormalizedMetadata {
+  name: string | null;
+  description: string | null;
+  animation_url: string | null;
+  external_link: string | null;
+  external_url: string | null;
+  image: string | null;
+  attributes: unknown[] | null;
+}
+
+export interface NFT {
+  amount: string;
+  block_number: string;
+  block_number_minted: string | null;
+  collection_banner_image: string;
+  collection_category: string;
+  collection_logo: string;
+  contract_type: string;
+  discord_url: string;
+  floor_price: string | null;
+  floor_price_currency: string | null;
+  floor_price_usd: string | null;
+  instagram_username: string;
+  last_metadata_sync: string;
+  last_token_uri_sync: string;
+  list_price: ListPrice;
+  metadata: string | null;
+  minter_address: string;
+  name: string;
+  normalized_metadata: NormalizedMetadata;
+  owner_of: string;
+  possible_spam: boolean;
+  project_url: string;
+  rarity_label: string | null;
+  rarity_percentage: number | null;
+  rarity_rank: number | null;
+  symbol: string;
+  telegram_url: string;
+  token_address: string;
+  token_hash: string;
+  token_id: string;
+  token_uri: string;
+  twitter_username: string | null;
+  verified_collection: boolean;
+  wiki_url: string;
+}

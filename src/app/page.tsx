@@ -9,25 +9,42 @@ export default function Home() {
   const [address, setAddress] = useState('');
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
+  const [cursors, setCursors] = useState<{ [key: number]: string }>({}); // Store cursors for each page
+
   const [filters, setFilters] = useState({
     page: 1,
     limit: 10,
     chain: 'eth',
   })
 
-  async function fetchNFTs() {
+  async function fetchNFTs(resetCursor = false) {
     if (!address) {
       return;
     }
     try {
       setLoading(true);
-      const res = await fetch(`/api/portfolio?address=${address}&chain=${filters.chain}&page=${filters.page}&limit=${filters.limit}`);
+      
+      // Get cursor for the current page (page - 1 because cursor is for next page)
+      const cursor = resetCursor ? undefined : cursors[filters.page - 1];
+      
+      let url = `/api/portfolio?address=${address}&chain=${filters.chain}&limit=${filters.limit}`;
+      if (cursor) {
+        url += `&cursor=${cursor}`;
+      }
+      
+      const res = await fetch(url);
       if (!res.ok) {
         alert("Không lấy được dữ liệu từ API!");
         return;
       }
       const result = await res.json();
       console.log("Fetched result: ", result);
+      
+      // Save the cursor for the next page
+      if (result.cursor) {
+        setCursors(prev => ({ ...prev, [filters.page]: result.cursor }));
+      }
+      
       setData(result);
     } catch (error) {
       alert("Có lỗi xảy ra khi gọi API!");
@@ -41,6 +58,13 @@ export default function Home() {
     if (address && data) {
       fetchNFTs();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.chain, filters.page]);
+  
+  useEffect(() => {
+    // Reset cursors when chain changes
+    setCursors({});
+    setFilters(prev => ({ ...prev, page: 1 }));
   }, [filters.chain]);
 
   return (
@@ -59,7 +83,7 @@ export default function Home() {
               onKeyDown={(e) => e.key === 'Enter' && fetchNFTs()}
             />
             <button
-              onClick={fetchNFTs}
+              onClick={() => fetchNFTs()}
               disabled={loading}
               className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50"
             >
@@ -69,7 +93,7 @@ export default function Home() {
 
           {/* Chain selector */}
           {
-            address && (
+            data && (
               <ChainSelector
                 filters={filters}
                 setFilters={setFilters}
@@ -84,7 +108,11 @@ export default function Home() {
             <WalletSummary address={address} />
 
             <h2 className="text-xl font-bold mt-8 mb-4">NFTs</h2>
-            <NFTGallery nfts={data || []} />
+            <NFTGallery
+              nfts={data || []}
+              filters={filters}
+              setFilters={setFilters}
+            />
 
             {/* <h2 className="text-xl font-bold mt-8 mb-4">Tokens</h2>
             <TokenList tokens={data || []} /> */}
