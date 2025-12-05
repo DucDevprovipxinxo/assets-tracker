@@ -52,3 +52,17 @@ export interface NFT {
   verified_collection: boolean;
   wiki_url: string;
 }
+
+export interface NftCollection {
+  token_address: string;
+  name: string;
+  symbol: string;
+  contract_type: string;
+  collection_logo: string;
+  collection_banner_image: string | null;
+  floor_price: string;
+  floor_price_currency: string;
+  floor_price_usd: string;
+  possible_spam: boolean;
+  verified_collection: boolean;
+}

@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   const MORALIS_API_KEY = process.env.MORALIS_API_KEY;
   const limit = searchParams.get("limit") || "10";
 
-  let url = `https://deep-index.moralis.io/api/v2.2/${address}/nft?chain=${chain}&format=decimal&limit=${limit}`;
+  let url = `https://deep-index.moralis.io/api/v2.2/${address}/nft/collections?chain=${chain}&limit=${limit}`;
   
   if (cursor) {
     url += `&cursor=${cursor}`;

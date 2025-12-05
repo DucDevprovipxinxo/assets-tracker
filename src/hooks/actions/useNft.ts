@@ -1,0 +1,71 @@
+import { useQuery } from "@tanstack/react-query";
+import { getAxios } from "./axios";
+// import { useQuery } from "@tanstack/react-query";
+// import { AxiosError } from "axios";
+
+type UseGetNftsParams = {
+  address: string;
+  chain: string;
+  limit: number;
+  cursor?: string;
+};
+
+export function useGetNfts({
+  address,
+  chain,
+  limit,
+  cursor,
+}: UseGetNftsParams) {
+  const { data, isLoading, error, isFetching } = useQuery({
+    queryKey: ["get-nfts", address, chain, limit, cursor],
+    queryFn: () =>
+      getAxios({
+        url: `/api/nft?address=${address}&chain=${chain}&limit=${limit}${
+          cursor ? `&cursor=${cursor}` : ""
+        }`,
+      }),
+    enabled: !!address,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  const isEmpty = !data;
+
+  return {
+    nftsData: data || null,
+    nftsLoading: isLoading,
+    nftsFetching: isFetching,
+    nftsError: error,
+    nftsEmpty: isEmpty,
+  };
+}
+
+export function useGetNftCollections({
+  address,
+  chain,
+  limit,
+  cursor,
+}: UseGetNftsParams) {
+  const { data, isLoading, error, isFetching } = useQuery({
+    queryKey: ["get-nft-collections", address, chain, limit, cursor],
+    queryFn: () =>
+      getAxios({
+        url: `/api/collections?address=${address}&chain=${chain}&limit=${limit}${
+          cursor ? `&cursor=${cursor}` : ""
+        }`,
+      }),
+    enabled: !!address,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  const isEmpty = !data;
+
+  return {
+    collectionsData: data || null,
+    collectionsLoading: isLoading,
+    collectionsFetching: isFetching,
+    collectionsError: error,
+    collectionsEmpty: isEmpty,
+  };
+}

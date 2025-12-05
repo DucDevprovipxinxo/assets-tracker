@@ -1,5 +1,6 @@
 import { convertIpfs } from "@/app/util/convert";
-import { NFT } from "@/app/hooks/interface/Nft";
+import { NFT } from "@/hooks/interfaces/Nft";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Props {
   nfts: any,
@@ -15,24 +16,37 @@ export default function NFTGallery({ nfts, filters, setFilters }: Props) {
 
   return (
     <>
-      <div className="grid grid-cols-2 md:grid-cols-4 mt-4 justify-between gap-4">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentPage}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+          className="grid grid-cols-2 md:grid-cols-4 mt-4 justify-between gap-4"
+        >
         {nftData && nftData.length > 0 ? nftData.map((nft: NFT, i: number) => {
 
           const metadata = nft.normalized_metadata || {};
-          const image = metadata.image || nft.metadata?.image || nft.collection_logo || '/placeholder.png';
-          const name = metadata.name || nft.name || 'Unknown NFT';
+          const image = metadata?.image || nft.collection_logo || '/placeholder.png';
+          const name = metadata?.name || nft.name || 'Unknown NFT';
 
           return (
-            <div
-              className="hover:scale-105 transition-transform duration-300 cursor-pointer"
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: i * 0.05 }}
+              whileHover={{ scale: 1.05 }}
+              className="cursor-pointer"
               key={nft.token_id + i}
             >
               <img src={convertIpfs(image)} alt="nft-img" className="rounded mb-2 w-[120px] h-[120px]" />
               <div className="inline">{name}</div>
-            </div>
+            </motion.div>
           );
         }) : <div>Không có NFT nào được tìm thấy.</div>}
-      </div>
+        </motion.div>
+      </AnimatePresence>
       {
         (hasPrevPage || hasNextPage) && (
           <div className="flex justify-center items-center gap-4 mt-5">
