@@ -8,6 +8,7 @@ type UseGetNftsParams = {
   chain: string;
   limit: number;
   cursor?: string;
+  token_addresses?: string;
 };
 
 export function useGetNfts({
@@ -15,14 +16,15 @@ export function useGetNfts({
   chain,
   limit,
   cursor,
+  token_addresses,
 }: UseGetNftsParams) {
   const { data, isLoading, error, isFetching } = useQuery({
-    queryKey: ["get-nfts", address, chain, limit, cursor],
+    queryKey: ["get-nfts", address, chain, limit, cursor, token_addresses],
     queryFn: () =>
       getAxios({
         url: `/api/nft?address=${address}&chain=${chain}&limit=${limit}${
           cursor ? `&cursor=${cursor}` : ""
-        }`,
+        }${token_addresses ? `&token_addresses=${token_addresses}` : ""}`,
       }),
     enabled: !!address,
     staleTime: 5 * 60 * 1000,

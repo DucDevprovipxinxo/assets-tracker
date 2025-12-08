@@ -18,12 +18,22 @@ export default function CollectionGallery({ collections, filters, setFilters, wa
   const hasNextPage = !!collections?.cursor;
   const hasPrevPage = currentPage > 1;
 
-  const handleCollectionClick = (collectionAddress: string) => {
-    // Save wallet address to localStorage for collection detail page
-    if (walletAddress) {
-      localStorage.setItem('lastWalletAddress', walletAddress);
-    }
-    router.push(`/collection/${collectionAddress}?wallet=${walletAddress || ''}`);
+  const handleCollectionClick = (collection: NftCollection) => {
+    // Save to sessionStorage for navigation (temporary, clears on tab close)
+    sessionStorage.setItem('collection_nav_state', JSON.stringify({
+      walletAddress: walletAddress,
+      collectionInfo: {
+        name: collection.name,
+        symbol: collection.symbol,
+        contract_type: collection.contract_type,
+        collection_logo: collection.collection_logo,
+        floor_price: collection.floor_price,
+        floor_price_currency: collection.floor_price_currency,
+        verified_collection: collection.verified_collection,
+      }
+    }));
+    
+    router.push(`/collection/${collection.token_address}`);
   };
 
   return (
@@ -51,12 +61,12 @@ export default function CollectionGallery({ collections, filters, setFilters, wa
                 <motion.div
                   key={collection.token_address + i}
                   initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: i * 0.05 }}
-                  whileHover={{ scale: 1.02 }}
-                  onClick={() => handleCollectionClick(collection.token_address)}
-                  className="bg-[#212531] rounded-lg overflow-hidden cursor-pointer border border-gray-700"
-                >
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: i * 0.05 }}
+                whileHover={{ scale: 1.02 }}
+                onClick={() => handleCollectionClick(collection)}
+                className="bg-[#212531] rounded-lg overflow-hidden cursor-pointer border border-gray-700"
+              >
                   {/* Banner or colored header */}
                   <div className="h-24 bg-gradient-to-r from-purple-900/50 to-blue-900/50 relative">
                     {collection.collection_banner_image && (
