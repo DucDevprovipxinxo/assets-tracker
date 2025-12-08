@@ -89,12 +89,14 @@ export default function Home() {
             ) : collectionsData ? (
               <div>
                 {/* <WalletSummary address={address} /> */}
-                <CollectionGallery
-                  collections={collectionsData}
-                  filters={filters}
-                  setFilters={setFilters}
-                  walletAddress={searchAddress}
-                />
+                <div className='mt-4'>
+                  <CollectionGallery
+                    collections={collectionsData}
+                    filters={filters}
+                    setFilters={setFilters}
+                    walletAddress={searchAddress}
+                  />
+                </div>
                 {/* <NFTGallery
                   nfts={nftsData || []}
                   filters={filters}
@@ -105,7 +107,7 @@ export default function Home() {
               collectionsError ? (
                 <div className="text-center text-red-500">Error loading portfolio: {collectionsError.message}</div>
               ) :
-              <div className="text-center text-gray-400">Enter a wallet address to view portfolio.</div>
+                <div className="text-center text-gray-400">Enter a wallet address to view portfolio.</div>
             )}
           </div>
         </div>

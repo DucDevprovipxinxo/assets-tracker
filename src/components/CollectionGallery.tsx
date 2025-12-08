@@ -2,6 +2,7 @@ import { convertIpfs } from "@/app/util/convert";
 import { NftCollection } from "@/hooks/interfaces/Nft";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { ChainSelector } from "./ChainSelector";
 
 interface Props {
   collections: any;
@@ -27,7 +28,10 @@ export default function CollectionGallery({ collections, filters, setFilters, wa
 
   return (
     <>
-      <h2 className="text-xl font-bold ">Collections</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold ">Collections</h2>
+        <ChainSelector filters={filters} setFilters={setFilters} />
+      </div>
       <AnimatePresence mode="wait">
         <motion.div
           key={currentPage}
@@ -35,83 +39,83 @@ export default function CollectionGallery({ collections, filters, setFilters, wa
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-5"
         >
-        {collectionData && collectionData.length > 0 ? (
-          collectionData.map((collection: NftCollection, i: number) => {
-            const logo = convertIpfs(collection.collection_logo || '/placeholder.png');
-            const floorPrice = collection.floor_price ? parseFloat(collection.floor_price).toFixed(4) : 'N/A';
-            const floorPriceUSD = collection.floor_price_usd ? `$${parseFloat(collection.floor_price_usd).toFixed(2)}` : 'N/A';
+          {collectionData && collectionData.length > 0 ? (
+            collectionData.map((collection: NftCollection, i: number) => {
+              const logo = convertIpfs(collection.collection_logo || '/placeholder.png');
+              const floorPrice = collection.floor_price ? parseFloat(collection.floor_price).toFixed(4) : 'N/A';
+              const floorPriceUSD = collection.floor_price_usd ? `$${parseFloat(collection.floor_price_usd).toFixed(2)}` : 'N/A';
 
-            return (
-              <motion.div
-                key={collection.token_address + i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: i * 0.05 }}
-                whileHover={{ scale: 1.02 }}
-                onClick={() => handleCollectionClick(collection.token_address)}
-                className="bg-[#212531] rounded-lg overflow-hidden cursor-pointer border border-gray-700"
-              >
-                {/* Banner or colored header */}
-                <div className="h-24 bg-gradient-to-r from-purple-900/50 to-blue-900/50 relative">
-                  {collection.collection_banner_image && (
-                    <img
-                      src={convertIpfs(collection.collection_banner_image)}
-                      alt="banner"
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                  {/* Logo overlay */}
-                  <div className="absolute -bottom-8 left-4">
-                    <img
-                      src={logo}
-                      alt={collection.name}
-                      className="w-16 h-16 rounded-lg border-4 border-[#181C24] bg-[#212531]"
-                    />
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-4 pt-10">
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex-1">
-                      <h3 className="font-bold text-lg truncate">{collection.name}</h3>
-                      <p className="text-gray-400 text-sm">{collection.symbol}</p>
+              return (
+                <motion.div
+                  key={collection.token_address + i}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: i * 0.05 }}
+                  whileHover={{ scale: 1.02 }}
+                  onClick={() => handleCollectionClick(collection.token_address)}
+                  className="bg-[#212531] rounded-lg overflow-hidden cursor-pointer border border-gray-700"
+                >
+                  {/* Banner or colored header */}
+                  <div className="h-24 bg-gradient-to-r from-purple-900/50 to-blue-900/50 relative">
+                    {collection.collection_banner_image && (
+                      <img
+                        src={convertIpfs(collection.collection_banner_image)}
+                        alt="banner"
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                    {/* Logo overlay */}
+                    <div className="absolute -bottom-8 left-4">
+                      <img
+                        src={logo}
+                        alt={collection.name}
+                        className="w-16 h-16 rounded-lg border-4 border-[#181C24] bg-[#212531]"
+                      />
                     </div>
-                    {collection.verified_collection && (
-                      <span className="text-blue-500 text-xs">✓</span>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-4 pt-10">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <h3 className="font-bold text-lg truncate">{collection.name}</h3>
+                        <p className="text-gray-400 text-sm">{collection.symbol}</p>
+                      </div>
+                      {collection.verified_collection && (
+                        <span className="text-blue-500 text-xs">✓</span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center justify-between text-sm mt-4">
+                      <div>
+                        <p className="text-gray-400 text-xs">Floor Price</p>
+                        <p className="font-semibold">
+                          {floorPrice} {collection.floor_price_currency?.toUpperCase() || 'ETH'}
+                        </p>
+                        <p className="text-gray-400 text-xs">{floorPriceUSD}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-gray-400 text-xs">Type</p>
+                        <p className="font-semibold text-xs">{collection.contract_type}</p>
+                      </div>
+                    </div>
+
+                    {collection.possible_spam && (
+                      <div className="mt-3 px-2 py-1 bg-yellow-900/20 border border-yellow-700/50 rounded text-yellow-500 text-xs text-center">
+                        ⚠️ Possible Spam
+                      </div>
                     )}
                   </div>
-
-                  <div className="flex items-center justify-between text-sm mt-4">
-                    <div>
-                      <p className="text-gray-400 text-xs">Floor Price</p>
-                      <p className="font-semibold">
-                        {floorPrice} {collection.floor_price_currency?.toUpperCase() || 'ETH'}
-                      </p>
-                      <p className="text-gray-400 text-xs">{floorPriceUSD}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-gray-400 text-xs">Type</p>
-                      <p className="font-semibold text-xs">{collection.contract_type}</p>
-                    </div>
-                  </div>
-
-                  {collection.possible_spam && (
-                    <div className="mt-3 px-2 py-1 bg-yellow-900/20 border border-yellow-700/50 rounded text-yellow-500 text-xs text-center">
-                      ⚠️ Possible Spam
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            );
-          })
-        ) : (
-          <div className="col-span-full text-center text-gray-400 py-12">
-            No collections found 😭.
-          </div>
-        )}
+                </motion.div>
+              );
+            })
+          ) : (
+            <div className="col-span-full text-center text-gray-400 py-12">
+              No collections found 😭.
+            </div>
+          )}
         </motion.div>
       </AnimatePresence>
 

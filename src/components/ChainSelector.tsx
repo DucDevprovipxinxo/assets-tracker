@@ -1,4 +1,11 @@
-
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 interface Props {
     filters: any
     setFilters: (filters: any) => void
@@ -12,20 +19,26 @@ export const ChainSelector = ({ filters, setFilters }: Props) => {
         { id: 'base', name: 'Base' },
         { id: 'avalanche', name: 'Avalanche' },
     ];
+    
     return (
-        <div className="flex gap-2 flex-wrap justify-center">
-            {chains.map((chain) => (
-                <button
-                    key={chain.id}
-                    onClick={() => setFilters({ ...filters, chain: chain.id })}
-                    className={`px-4 py-2 rounded transition-colors ${filters.chain === chain.id
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                        }`}
-                >
-                    {chain.name}
-                </button>
-            ))}
+        <div className="flex gap-2 flex-wrap justify-start">
+            <Select 
+                value={filters.chain} 
+                onValueChange={(value) => setFilters({ ...filters, chain: value, page: 1 })}
+            >
+                <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select chain" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectGroup>
+                        {chains.map(chain => (
+                            <SelectItem value={chain.id} key={chain.id}>
+                                {chain.name}
+                            </SelectItem>
+                        ))}
+                    </SelectGroup>
+                </SelectContent>
+            </Select>
         </div>
     )
 }
