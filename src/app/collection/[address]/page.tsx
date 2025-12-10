@@ -27,7 +27,6 @@ export default function CollectionDetailPage() {
   const { nftsData, nftsLoading } = useGetNfts(query);
 
   useEffect(() => {
-    // Get state from sessionStorage (set during navigation)
     const navState = sessionStorage.getItem('collection_nav_state');
 
     if (navState) {
@@ -37,26 +36,17 @@ export default function CollectionDetailPage() {
         setCollectionInfo(state.collectionInfo);
       }
     } else {
-      const savedAddress = localStorage.getItem('lastWalletAddress');
+      const savedAddress = sessionStorage.getItem('lastWalletAddress');
       if (savedAddress) {
         setWalletAddress(savedAddress);
       }
     }
   }, [collectionAddress]);
+  
 
   // Calculate stats from NFT data
   const totalNFTs = nftsData?.result?.length || 0;
-  const uniqueOwners = collectionInfo?.unique_owners || 5; // Placeholder
   const floorPrice = collectionInfo?.floor_price || '--';
-
-  // Calculate rarity stats
-  const rarityStats = nftsData?.result?.reduce((acc: any, nft: any) => {
-    const rarity = nft.rarity_label || 'Common';
-    acc[rarity] = (acc[rarity] || 0) + 1;
-    return acc;
-  }, {}) || {};
-
-  const totalForRarity = Object.values(rarityStats).reduce((a, b) => Number(a) + Number(b), 0) || 1;
 
   return (
     <main className="bg-[#181C24] min-h-screen p-6">
@@ -114,49 +104,12 @@ export default function CollectionDetailPage() {
                 <p className="text-2xl font-bold">{totalNFTs}</p>
               </div>
 
-              {/* Unique Owners */}
-              <div className="mb-6">
-                <p className="text-gray-400 text-xs mb-1">Unique Owners</p>
-                <p className="text-2xl font-bold">{uniqueOwners}</p>
-              </div>
-
               {/* Floor Price */}
               <div className="mb-6">
                 <p className="text-gray-400 text-xs mb-1">Floor Price</p>
                 <p className="text-xl font-bold">{floorPrice}</p>
               </div>
 
-              {/* Stats - Rarity Distribution */}
-              <div>
-                <p className="text-gray-400 text-xs mb-3">Stats</p>
-                <div className="space-y-2">
-                  {Object.entries(rarityStats).map(([rarity, count]) => {
-                    const percentage = Math.round((Number(count) / totalForRarity) * 100);
-                    return (
-                      <div key={rarity} className="flex justify-between items-center">
-                        <span className="text-sm text-gray-300">{rarity}</span>
-                        <span className="text-sm font-semibold">{percentage}%</span>
-                      </div>
-                    );
-                  })}
-                  {Object.keys(rarityStats).length === 0 && (
-                    <>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-300">Rare</span>
-                        <span className="text-sm font-semibold">12%</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-300">Epic</span>
-                        <span className="text-sm font-semibold">3%</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-300">Common</span>
-                        <span className="text-sm font-semibold">85%</span>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
             </div>
 
             {/* Right Content - NFT Grid */}

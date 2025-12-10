@@ -30,18 +30,54 @@ export default function NFTGallery({ nfts, filters, setFilters }: Props) {
           const metadata = nft.normalized_metadata || {};
           const image = metadata?.image || nft.collection_logo || '/placeholder.png';
           const name = metadata?.name || nft.name || 'Unknown NFT';
+          const tokenId = nft.token_id || '--';
+          const lastSale = nft.last_sale?.price 
+            ? `${parseFloat(nft.last_sale.price).toFixed(4)} ${nft.last_sale.token_symbol || 'ETH'}`
+            : '--';
+          const lastSaleDate = nft.last_sale?.timestamp 
+            ? new Date(nft.last_sale.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            : '';
 
           return (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, delay: i * 0.05 }}
-              whileHover={{ scale: 1.05 }}
-              className="cursor-pointer"
+              whileHover={{ scale: 1.02 }}
+              className="cursor-pointer bg-[#212531] rounded-lg overflow-hidden border border-gray-700"
               key={nft.token_id + i}
             >
-              <img src={convertIpfs(image)} alt="nft-img" className="rounded mb-2 w-[120px] h-[120px]" />
-              <div className="inline">{name}</div>
+              {/* NFT Image */}
+              <div className="relative aspect-square bg-gray-800">
+                <img 
+                  src={convertIpfs(image)} 
+                  alt={name}
+                  className="w-full h-full object-cover" 
+                />
+              </div>
+
+              {/* NFT Info */}
+              <div className="p-3">
+                {/* NFT Name */}
+                <h3 className="font-bold text-sm mb-2 truncate">{name}</h3>
+
+                {/* Token ID Row */}
+                <div className="text-xs mb-2">
+                  <p className="text-gray-400">Token ID</p>
+                  <p className="text-white truncate">{tokenId.length > 20 ? `${tokenId.slice(0, 20)}...` : tokenId}</p>
+                </div>
+
+                {/* Last Sale Row */}
+                <div className="flex justify-between items-center text-xs pt-2 border-t border-gray-700">
+                  <div>
+                    <p className="text-gray-400">Last Sale</p>
+                    <p className="text-white">{lastSale}</p>
+                  </div>
+                  {lastSaleDate && (
+                    <p className="text-gray-400">{lastSaleDate}</p>
+                  )}
+                </div>
+              </div>
             </motion.div>
           );
         }) : <div>Không có NFT nào được tìm thấy.</div>}

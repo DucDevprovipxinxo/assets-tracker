@@ -1,15 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { getAxios } from "./axios";
+import { NftCollectionParams, NftParams } from "../interfaces/Nft";
 // import { useQuery } from "@tanstack/react-query";
 // import { AxiosError } from "axios";
-
-type UseGetNftsParams = {
-  address: string;
-  chain: string;
-  limit: number;
-  cursor?: string;
-  token_addresses?: string;
-};
 
 export function useGetNfts({
   address,
@@ -17,7 +10,7 @@ export function useGetNfts({
   limit,
   cursor,
   token_addresses,
-}: UseGetNftsParams) {
+}: NftParams) {
   const { data, isLoading, error, isFetching } = useQuery({
     queryKey: ["get-nfts", address, chain, limit, cursor, token_addresses],
     queryFn: () =>
@@ -47,7 +40,7 @@ export function useGetNftCollections({
   chain,
   limit,
   cursor,
-}: UseGetNftsParams) {
+}: NftCollectionParams) {
   const { data, isLoading, error, isFetching } = useQuery({
     queryKey: ["get-nft-collections", address, chain, limit, cursor],
     queryFn: () =>

@@ -6,6 +6,13 @@ interface ListPrice {
   marketplace: string | null;
 }
 
+interface LastSale {
+  price: string;
+  price_currency: string | null;
+  token_symbol: string | null;
+  timestamp: string;
+}
+
 interface NormalizedMetadata {
   name: string | null;
   description: string | null;
@@ -31,6 +38,7 @@ export interface NFT {
   instagram_username: string;
   last_metadata_sync: string;
   last_token_uri_sync: string;
+  last_sale: LastSale | null;
   list_price: ListPrice;
   metadata: string | null;
   minter_address: string;
@@ -65,4 +73,19 @@ export interface NftCollection {
   floor_price_usd: string;
   possible_spam: boolean;
   verified_collection: boolean;
+}
+
+export interface NftCollectionParams {
+  address: string;
+  chain: string;
+  limit: number;
+  cursor?: string;
+}
+
+export interface NftParams {
+  address: string;
+  chain: string;
+  limit: number;
+  cursor?: string;
+  token_addresses?: string;
 }
