@@ -9,7 +9,7 @@ export default function PortfolioPage() {
   const params = useParams();
   const router = useRouter();
   const walletAddress = params.address as string;
-  
+
   const [address, setAddress] = useState(walletAddress);
   const [activeTab, setActiveTab] = useState<'collections' | 'tokens' | 'detail'>('collections');
   const [cursors, setCursors] = useState<{ [key: number]: string }>({});
@@ -26,14 +26,15 @@ export default function PortfolioPage() {
     cursor: cursors[filters.page - 1] || '',
   };
 
-  const { collectionsData, collectionsLoading, collectionsError } = useGetNftCollections(collectionsQuery);
+  const { collectionsData, collectionsLoading } = useGetNftCollections(collectionsQuery);
 
   // Save cursor when data changes
   useEffect(() => {
     if (collectionsData?.cursor && !cursors[filters.page]) {
       setCursors(prev => ({ ...prev, [filters.page]: collectionsData.cursor }));
     }
-  }, [collectionsData?.cursor, filters.page, cursors]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collectionsData?.cursor, filters.page]);
 
   const handleSearch = () => {
     if (address.trim() && address !== walletAddress) {
@@ -67,70 +68,65 @@ export default function PortfolioPage() {
           </button>
         </div>
 
-        {collectionsError ? (
-          <div className="mt-5 text-center text-red-500">
-            Error loading portfolio: {collectionsError?.message || 'Unknown error'}
-          </div>
-        ) : collectionsLoading && !collectionsData ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-500"></div>
-            <p className="text-gray-400 mt-4">Loading portfolio...</p>
-          </div>
-        ) : collectionsData ? (
-          <div className='grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-4 items-start'>
-            {/* left */}
-            <Navigation
-              collectionsData={collectionsData}
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-            />
-            
-            {/* right */}
-            <div className='p-4 pt-0 rounded-lg'>
-              {activeTab === 'collections' && (
-                <div className='mt-4'>
-                  <CollectionGallery
-                    collections={collectionsData}
-                    filters={filters}
-                    setFilters={setFilters}
-                    walletAddress={walletAddress}
-                  />
-                </div>
-              )}
+        <div className='grid grid-cols-1 md:grid-cols-[300px_1fr] gap-4 items-start'>
+          <Navigation
+            collectionsData={collectionsData}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+          />
 
-              {activeTab === 'tokens' && (
-                <div className='mt-4'>
-                  <h2 className="text-xl font-bold mb-4">Tokens</h2>
-                  <div className="text-gray-400 text-center py-20">
-                    Token list coming soon...
+          {
+            collectionsData ? (
+              <div className='p-4 pt-0 rounded-lg'>
+                {activeTab === 'collections' && (
+                  <div className='mt-4'>
+                    <CollectionGallery
+                      collections={collectionsData}
+                      filters={filters}
+                      setFilters={setFilters}
+                      walletAddress={walletAddress}
+                    />
                   </div>
-                </div>
-              )}
+                )}
 
-              {activeTab === 'detail' && (
-                <div className='mt-4'>
-                  <h2 className="text-xl font-bold mb-4">Wallet Details</h2>
-                  <div className="bg-[#212531] p-6 rounded-lg">
-                    <div className="space-y-4">
-                      <div>
-                        <p className="text-gray-400 text-sm">Wallet Address</p>
-                        <p className="font-mono text-sm break-all">{walletAddress}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400 text-sm">Chain</p>
-                        <p className="text-sm">{filters.chain.toUpperCase()}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400 text-sm">Total Collections</p>
-                        <p className="text-2xl font-bold">{collectionsData?.total || 0}</p>
+                {activeTab === 'tokens' && (
+                  <div className='mt-4'>
+                    <h2 className="text-xl font-bold mb-4">Tokens</h2>
+                    <div className="text-gray-400 text-center py-20">
+                      Token list coming soon...
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'detail' && (
+                  <div className='mt-4'>
+                    <h2 className="text-xl font-bold mb-4">Wallet Details</h2>
+                    <div className="bg-[#212531] p-6 rounded-lg">
+                      <div className="space-y-4">
+                        <div>
+                          <p className="text-gray-400 text-sm">Wallet Address</p>
+                          <p className="font-mono text-sm break-all">{walletAddress}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">Chain</p>
+                          <p className="text-sm">{filters.chain.toUpperCase()}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400 text-sm">Total Collections</p>
+                          <p className="text-2xl font-bold">{collectionsData?.total || 0}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
-          </div>
-        ) : null}
+                )}
+              </div>
+            ) : (
+              <div className="col-span-full text-center text-gray-400 py-20">
+                {collectionsLoading ? 'Loading portfolio...' : 'No collections found. 😭'}
+              </div>
+            )
+          }
+        </div>
       </div>
     </main>
   );

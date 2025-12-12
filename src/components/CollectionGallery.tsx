@@ -1,11 +1,11 @@
 import { convertIpfs } from "@/app/util/convert";
-import { NftCollection } from "@/hooks/interfaces/Nft";
+import { NftCollection, NftCollectionItem } from "@/hooks/interfaces/Nft";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { ChainSelector } from "./ChainSelector";
 
 interface Props {
-  collections: any;
+  collections: NftCollection;
   filters: any;
   setFilters: (updater: (prev: any) => any) => void;
   walletAddress?: string;
@@ -18,7 +18,8 @@ export default function CollectionGallery({ collections, filters, setFilters, wa
   const hasNextPage = !!collections?.cursor;
   const hasPrevPage = currentPage > 1;
 
-  const handleCollectionClick = (collection: NftCollection) => {
+  const handleCollectionClick = (collection: NftCollectionItem) => {
+    console.log("Clicked collection:", collection);
     // Save to sessionStorage for navigation (temporary, clears on tab close)
     sessionStorage.setItem('collection_nav_state', JSON.stringify({
       walletAddress: walletAddress,
@@ -32,7 +33,7 @@ export default function CollectionGallery({ collections, filters, setFilters, wa
         verified_collection: collection.verified_collection,
       }
     }));
-    
+
     router.push(`/collection/${collection.token_address}`);
   };
 
@@ -52,7 +53,7 @@ export default function CollectionGallery({ collections, filters, setFilters, wa
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-5"
         >
           {collectionData && collectionData.length > 0 ? (
-            collectionData.map((collection: NftCollection, i: number) => {
+            collectionData.map((collection: NftCollectionItem, i: number) => {
               const logo = convertIpfs(collection.collection_logo || '/placeholder.png');
               const floorPrice = collection.floor_price ? parseFloat(collection.floor_price).toFixed(4) : 'N/A';
               const floorPriceUSD = collection.floor_price_usd ? `$${parseFloat(collection.floor_price_usd).toFixed(2)}` : 'N/A';
@@ -61,12 +62,12 @@ export default function CollectionGallery({ collections, filters, setFilters, wa
                 <motion.div
                   key={collection.token_address + i}
                   initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: i * 0.05 }}
-                whileHover={{ scale: 1.02 }}
-                onClick={() => handleCollectionClick(collection)}
-                className="bg-[#212531] rounded-lg overflow-hidden cursor-pointer border border-gray-700"
-              >
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: i * 0.05 }}
+                  whileHover={{ scale: 1.02 }}
+                  onClick={() => handleCollectionClick(collection)}
+                  className="bg-[#212531] rounded-lg overflow-hidden cursor-pointer border border-gray-700"
+                >
                   {/* Banner or colored header */}
                   <div className="h-24 bg-gradient-to-r from-purple-900/50 to-blue-900/50 relative">
                     {collection.collection_banner_image && (

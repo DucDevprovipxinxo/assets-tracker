@@ -61,7 +61,7 @@ export interface NFT {
   wiki_url: string;
 }
 
-export interface NftCollection {
+export interface NftCollectionItem {
   token_address: string;
   name: string;
   symbol: string;
@@ -73,6 +73,13 @@ export interface NftCollection {
   floor_price_usd: string;
   possible_spam: boolean;
   verified_collection: boolean;
+}
+
+export interface NftCollection {
+  cursor: string;
+  page: number;
+  limit: number;
+  result: NftCollectionItem[];
 }
 
 export interface NftCollectionParams {
