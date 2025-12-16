@@ -19,6 +19,28 @@ export default function PortfolioPage() {
     chain: 'eth',
   });
 
+  console.log("cursors: ", cursors)
+
+  // Restore pagination state from sessionStorage on mount
+  useEffect(() => {
+    const savedState = sessionStorage.getItem(`portfolio_${walletAddress}_state`);
+    if (!savedState) return
+    const state = JSON.parse(savedState);
+    if (state.cursors) setCursors(state.cursors);
+    if (state.filters) setFilters(state.filters);
+
+  }, [walletAddress]);
+
+  // Save pagination state to sessionStorage when it changes
+  useEffect(() => {
+    if (filters.page > 1 || Object.keys(cursors).length > 0) {
+      sessionStorage.setItem(`portfolio_${walletAddress}_state`, JSON.stringify({
+        cursors,
+        filters,
+      }));
+    }
+  }, [cursors, filters, walletAddress]);
+
   const collectionsQuery = {
     address: walletAddress,
     chain: filters.chain,
@@ -35,6 +57,7 @@ export default function PortfolioPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collectionsData?.cursor, filters.page]);
+
 
   const handleSearch = () => {
     if (address.trim() && address !== walletAddress) {

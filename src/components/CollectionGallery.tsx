@@ -17,9 +17,9 @@ export default function CollectionGallery({ collections, filters, setFilters, wa
   const currentPage = filters.page || 1;
   const hasNextPage = !!collections?.cursor;
   const hasPrevPage = currentPage > 1;
-
+  
   const handleCollectionClick = (collection: NftCollectionItem) => {
-    console.log("Clicked collection:", collection);
+
     // Save to sessionStorage for navigation (temporary, clears on tab close)
     sessionStorage.setItem('collection_nav_state', JSON.stringify({
       walletAddress: walletAddress,

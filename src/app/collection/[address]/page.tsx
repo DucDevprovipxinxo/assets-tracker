@@ -6,7 +6,6 @@ import { useGetNfts } from '@/hooks/actions/useNft';
 
 export default function CollectionDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const collectionAddress = params.address as string;
   const [walletAddress, setWalletAddress] = useState('');
   const [collectionInfo, setCollectionInfo] = useState<any>(null);
@@ -51,15 +50,7 @@ export default function CollectionDetailPage() {
   return (
     <main className="bg-[#181C24] min-h-screen p-6">
       <div className="max-w-[1400px] mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <button
-            onClick={() => router.back()}
-            className="px-4 py-2 rounded-lg bg-transparent text-gray-300 hover:bg-gray-700 transition-colors flex items-center gap-2"
-          >
-            ← Back
-          </button>
-          <h1 className="text-3xl font-bold">Collection Details</h1>
-        </div>
+        
 
         {nftsLoading ? (
           <div className="flex flex-col items-center justify-center py-20">
